@@ -25,14 +25,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';  // Importa F
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideFirebaseApp(() => initializeApp({
-		apiKey: "AIzaSyDp4RCs8UwhBrTNivTVoBkbDwQ_s1LYxLI",
-		authDomain: "b-1accc.firebaseapp.com",
-		projectId: "b-1accc",
-		storageBucket: "b-1accc.firebasestorage.app",
-		messagingSenderId: "606986248368",
-		appId: "1:606986248368:web:df6c0a16fa5bc4ed9a9b75",
-		measurementId: "G-QDN8GEEH17"
-	  
+      "projectId":"b-2bff7",
+      "appId":"1:1045510192311:web:d5200b57294dbb7fe0e132",
+      "storageBucket":"b-2bff7.firebasestorage.app",
+      "apiKey":"AIzaSyAhoofBl1c9nmH5wa0dcQSIPPuwfumQtdI",
+      "authDomain":"b-2bff7.firebaseapp.com",
+      "messagingSenderId":"1045510192311",
+      "measurementId":"G-M6LJ6CL8DY"
     })),
     provideFirestore(() => getFirestore()),
 	provideAuth(() => getAuth())

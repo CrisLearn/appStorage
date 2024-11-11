@@ -27,6 +27,12 @@
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>
+	<key>NSCameraUsageDescription</key>
+	<string>To capture images</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>To add images</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>To store images</string>
 	<array>
 		<string>armv7</string>
 	</array>

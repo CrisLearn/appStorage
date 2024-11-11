@@ -6,35 +6,41 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { environment } from "../environments/environment";
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { getAuth, provideAuth } from '@angular/fire/auth'; 
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';  // Importa FormsModule y ReactiveFormsModule
+import { environment } from '../environments/environment';
+import { provideAuth, getAuth } from '@angular/fire/auth';
+import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { provideStorage, getStorage } from '@angular/fire/storage';
+import { Capacitor } from '@capacitor/core';
+import { indexedDBLocalPersistence, initializeAuth } from 'firebase/auth';
+import { getApp } from 'firebase/app';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { IonicStorageModule } from '@ionic/storage-angular';
 
 @NgModule({
   declarations: [AppComponent],
   imports: [
     BrowserModule,
-	
     IonicModule.forRoot(),
+    IonicStorageModule.forRoot(),
     AppRoutingModule,
-    FormsModule,  // Importa FormsModule para formularios de plantilla
-    ReactiveFormsModule,  // Importa ReactiveFormsModule para formularios reactivos
+    FormsModule,  // Formulario basado en plantillas
+    ReactiveFormsModule  // Formularios reactivos
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    provideFirebaseApp(() => initializeApp({
-      "projectId":"b-2bff7",
-      "appId":"1:1045510192311:web:d5200b57294dbb7fe0e132",
-      "storageBucket":"b-2bff7.firebasestorage.app",
-      "apiKey":"AIzaSyAhoofBl1c9nmH5wa0dcQSIPPuwfumQtdI",
-      "authDomain":"b-2bff7.firebaseapp.com",
-      "messagingSenderId":"1045510192311",
-      "measurementId":"G-M6LJ6CL8DY"
-    })),
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAuth(() => {
+      if (Capacitor.isNativePlatform()) {
+        return initializeAuth(getApp(), {
+          persistence: indexedDBLocalPersistence
+        });
+      } else {
+        return getAuth();
+      }
+    }),
     provideFirestore(() => getFirestore()),
-	provideAuth(() => getAuth())
+    provideStorage(() => getStorage())
   ],
   bootstrap: [AppComponent],
 })

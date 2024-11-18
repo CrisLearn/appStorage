@@ -1,75 +1,100 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController } from '@ionic/angular';
-import { AuthService } from '../services/auth.service';
+import { ChatService } from '../services/chat.service';
 
 @Component({
-	selector: 'app-login',
-	templateUrl: './login.page.html',
-	styleUrls: ['./login.page.scss']
+  selector: 'app-login',
+  templateUrl: './login.page.html',
+  styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
-	credentials!: FormGroup;
+  credentialForm!: FormGroup;  // Usamos "!" para decirle a TS que se inicializará antes de su uso
 
-	constructor(
-		private fb: FormBuilder,
-		private loadingController: LoadingController,
-		private alertController: AlertController,
-		private authService: AuthService,
-		private router: Router
-	) {}
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private alertController: AlertController,
+    private loadingController: LoadingController,
+    private chatService: ChatService
+  ) {}
 
-	// Easy access for form fields
-	get email() {
-		return this.credentials.get('email');
-	}
+  ngOnInit() {
+    this.credentialForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+    });
+  }
 
-	get password() {
-		return this.credentials.get('password');
-	}
+  async signUp() {
+    if (this.credentialForm.invalid) {
+      const alert = await this.alertController.create({
+        header: 'Form Invalid',
+        message: 'Please enter valid email and password.',
+        buttons: ['OK'],
+      });
+      await alert.present();
+      return;
+    }
 
-	ngOnInit() {
-		this.credentials = this.fb.group({
-			email: ['', [Validators.required, Validators.email]],
-			password: ['', [Validators.required, Validators.minLength(6)]]
-		});
-	}
+    const loading = await this.loadingController.create();
+    await loading.present();
 
-	async register() {
-		const loading = await this.loadingController.create();
-		await loading.present();
+    this.chatService.signup(this.credentialForm.value).then(
+      (user) => {
+        loading.dismiss();
+        this.router.navigateByUrl('/chat', { replaceUrl: true });
+      },
+      async (err) => {
+        loading.dismiss();
+        const alert = await this.alertController.create({
+          header: 'Sign up failed',
+          message: err.message,
+          buttons: ['OK'],
+        });
+        await alert.present();
+      }
+    );
+  }
 
-		const user = await this.authService.register(this.credentials.value);
-		await loading.dismiss();
+  async signIn() {
+    if (this.credentialForm.invalid) {
+      const alert = await this.alertController.create({
+        header: 'Form Invalid',
+        message: 'Please enter valid email and password.',
+        buttons: ['OK'],
+      });
+      await alert.present();
+      return;
+    }
 
-		if (user) {
-			this.router.navigateByUrl('/home', { replaceUrl: true });
-		} else {
-			this.showAlert('Registration failed', 'Please try again!');
-		}
-	}
+    const loading = await this.loadingController.create();
+    await loading.present();
 
-	async login() {
-		const loading = await this.loadingController.create();
-		await loading.present();
+    this.chatService.signIn(this.credentialForm.value).then(
+      (res) => {
+        loading.dismiss();
+        this.router.navigateByUrl('/chat', { replaceUrl: true });
+      },
+      async (err) => {
+        loading.dismiss();
+        const alert = await this.alertController.create({
+          header: ':(',
+          message: err.message,
+          buttons: ['OK'],
+        });
+        await alert.present();
+      }
+    );
+  }
 
-		const user = await this.authService.login(this.credentials.value);
-		await loading.dismiss();
+  // Easy access for form fields
+  get email() {
+    return this.credentialForm.get('email');
+  }
 
-		if (user) {
-			this.router.navigateByUrl('/home', { replaceUrl: true });
-		} else {
-			this.showAlert('Login failed', 'Please try again!');
-		}
-	}
-
-	async showAlert(header: string, message: string) {
-		const alert = await this.alertController.create({
-			header,
-			message,
-			buttons: ['OK']
-		});
-		await alert.present();
-	}
+  get password() {
+    return this.credentialForm.get('password');
+  }
 }

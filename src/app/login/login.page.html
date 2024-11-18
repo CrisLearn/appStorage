@@ -1,26 +1,42 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title>My App</ion-title>
+    <ion-title>
+      Devdactic Chat
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <form (ngSubmit)="login()" [formGroup]="credentials">
-    <ion-item fill="solid" class="ion-margin-bottom">
-      <ion-input type="email" placeholder="Email" formControlName="email"></ion-input>
-      <ion-note slot="error" *ngIf="(email?.dirty || email?.touched) && email?.errors?.['email']">
-        Email is invalid
-      </ion-note>
-    </ion-item>
-    
-    <ion-item fill="solid" class="ion-margin-bottom">
-      <ion-input type="password" placeholder="Password" formControlName="password"></ion-input>
-      <ion-note slot="error" *ngIf="(password?.dirty || password?.touched) && password?.errors?.['minlength']">
-        Password needs to be 6 characters
-      </ion-note>
+  <form [formGroup]="credentialForm">
+    <ion-item>
+      <ion-input
+        placeholder="Email address"
+        formControlName="email"
+        autofocus="true"
+        clearInput="true"
+      ></ion-input>
     </ion-item>
 
-    <ion-button type="submit" expand="block" [disabled]="!credentials.valid">Log in</ion-button>
-    <ion-button type="button" expand="block" color="secondary" (click)="register()">Create account</ion-button>
+    <div *ngIf="email?.dirty || email?.touched && email?.errors" class="error">
+      <span *ngIf="email?.errors?.['required']">Email is required</span>
+      <span *ngIf="email?.errors?.['email']">Email is invalid</span>
+    </div>
+
+    <ion-item>
+      <ion-input
+        placeholder="Password"
+        type="password"
+        formControlName="password"
+        clearInput="true"
+      ></ion-input>
+    </ion-item>
+
+    <div *ngIf="password?.dirty || password?.touched && password?.errors" class="error">
+      <span *ngIf="password?.errors?.['required']">Password is required</span>
+      <span *ngIf="password?.errors?.['minlength']">Password needs to be 6 characters</span>
+    </div>
   </form>
+
+  <ion-button (click)="signUp()" expand="full">Sign up</ion-button>
+  <ion-button (click)="signIn()" expand="full" color="secondary">Sign in</ion-button>
 </ion-content>
